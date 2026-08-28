@@ -1,0 +1,80 @@
+{
+  "coverage": {
+    "title": "감사 이벤트 Coverage",
+    "description": "구조적 연결과 실제 원장 관찰 여부를 서로 독립적으로 진단합니다.",
+    "summary": {"total": "전체", "covered": "구조 연결", "observed": "원장 관찰"},
+    "filters": {"source_type": "소스 유형", "source_identifier": "소스 식별자", "status": "구조 상태", "observed": "관찰 여부", "all": "전체", "apply": "적용", "reset": "초기화"},
+    "status": {"covered": "구조적 연결 확인", "partial": "일부 연결 확인", "uncovered": "연결 부재 확인", "unknown": "판정 불가"},
+    "observation": {"observed": "실제 로그 관찰됨", "not_observed": "현재 원장에서 관찰되지 않음"},
+    "columns": {"event": "이벤트", "source": "소스", "category": "분류", "severity": "심각도", "structural": "구조 상태", "observed": "관찰", "count": "건수", "last_seen": "마지막 관찰", "details": "상세"},
+    "details": {"checks": "구조 검사", "diagnostics": "진단 코드", "description_key": "설명 키", "expected_action": "예상 액션", "show": "상세 보기", "hide": "상세 닫기"},
+    "empty": "선언된 감사 이벤트가 없습니다. Producer 채택 전에는 정상 상태입니다.",
+    "loading": "Coverage를 분석하는 중입니다.",
+    "errors": {"load": "감사 Coverage를 불러오지 못했습니다."},
+    "checks": {"source_activity_listener": "Activity Log 리스너", "expected_action_mapping": "예상 action 연결", "description_translation": "설명 번역", "passed": "확인됨", "failed": "확인되지 않음", "unknown": "알 수 없음"},
+    "diagnostics": {"source_listener_missing": "해당 source의 Activity Log 리스너를 찾지 못했습니다.", "expected_action_not_mapped": "예상 action과 대응하는 구독 hook이 없습니다.", "translation_missing": "설명 번역이 없습니다.", "source_unresolvable": "이벤트 source를 판별할 수 없습니다.", "no_observation": "현재 원장에서 대응 로그가 관찰되지 않았습니다.", "structural_unknown": "런타임 메타데이터만으로 구조적 연결을 판정할 수 없습니다."}
+  },
+  "audit": {
+    "title": "감사 로그 탐색기",
+    "description": "허용된 범위의 활동 기록을 감사 관점에서 검색하고 변경 내역을 확인합니다.",
+    "filters": {
+      "title": "검색 조건",
+      "log_type": "로그 유형",
+      "action": "액션",
+      "actor": "행위자",
+      "resource_type": "리소스 유형",
+      "resource_id": "리소스 ID",
+      "source_type": "소스 유형",
+      "source_identifier": "소스 식별자",
+      "date_from": "시작일",
+      "date_to": "종료일",
+      "search": "통합 검색",
+      "all": "전체",
+      "placeholder": "검색어를 입력하세요"
+    },
+    "log_type": {
+      "admin": "관리자",
+      "user": "사용자",
+      "system": "시스템"
+    },
+    "columns": {
+      "datetime": "일시",
+      "actor": "행위자",
+      "action": "액션",
+      "resource": "리소스",
+      "source": "소스",
+      "ip": "IP",
+      "description": "설명",
+      "details": "상세"
+    },
+    "source": {
+      "core": "코어",
+      "module": "모듈",
+      "plugin": "플러그인",
+      "template": "템플릿",
+      "unknown": "알 수 없음"
+    },
+    "empty": "조건에 맞는 감사 로그가 없습니다.",
+    "loading": "감사 로그를 불러오는 중입니다.",
+    "errors": {
+      "load": "감사 로그를 불러오지 못했습니다."
+    },
+    "details": {
+      "changes": "변경 내역",
+      "bulk_changes": "일괄 변경 내역",
+      "properties": "속성",
+      "field": "필드",
+      "before": "변경 전: {{value}}",
+      "after": "변경 후: {{value}}",
+      "key": "키",
+      "value": "값",
+      "none": "표시할 상세 정보가 없습니다."
+    },
+    "actions": {
+      "apply": "필터 적용",
+      "reset": "필터 초기화",
+      "show_details": "상세 보기",
+      "hide_details": "상세 닫기"
+    }
+  }
+}

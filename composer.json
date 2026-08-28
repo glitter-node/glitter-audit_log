@@ -1,0 +1,25 @@
+{
+    "name": "glitter/audit-log",
+    "description": "Read-only audit query module for Gnuboard7",
+    "type": "library",
+    "version": "0.4.0",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Glitter.kr"
+        }
+    ],
+	"autoload": {
+        "psr-4": {
+            "Modules\\Glitter\\AuditLog\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\Glitter\\AuditLog\\Tests\\": "tests/"
+        }
+    },
+    "require": {
+        "php": "^8.2"
+    }
+}

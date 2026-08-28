@@ -1,0 +1,23 @@
+{
+    "identifier": "glitter-audit_log",
+    "vendor": "Glitter.kr",
+    "name": {
+        "ko": "감사 로그",
+        "en": "Audit Log"
+    },
+    "version": "0.4.0",
+    "license": "MIT",
+    "description": {
+        "ko": "G7 감사 이벤트 탐색·Registry·Coverage 진단",
+        "en": "G7 audit event explorer, registry, and coverage diagnostics"
+    },
+    "g7_version": ">=7.0.9",
+    "dependencies": {
+        "modules": {},
+        "plugins": {}
+    },
+    "assets": {
+        "js": [],
+        "css": []
+    }
+}

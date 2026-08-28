@@ -1,0 +1,71 @@
+{
+  "version": "1.0.0",
+  "layout_name": "admin_audit_coverage",
+  "permissions": ["glitter-audit_log.audits.read", "core.activities.read"],
+  "extends": "_admin_base",
+  "meta": {"title": "$t:glitter-audit_log.coverage.title", "description": "$t:glitter-audit_log.coverage.description"},
+  "state": {"filters": {}, "selectedEventKey": null},
+  "init_actions": [{"handler": "setState", "params": {"target": "local", "filters": {
+    "source_type": "{{query.source_type || ''}}",
+    "source_identifier": "{{query.source_identifier || ''}}",
+    "structural_status": "{{query.structural_status || ''}}",
+    "observed": "{{query.observed || ''}}"
+  }}}],
+  "transition_overlay": {"wait_for": ["coverage"]},
+  "data_sources": [{
+    "id": "coverage", "label_key": "$t:glitter-audit_log.coverage.title", "type": "api",
+    "endpoint": "/api/modules/glitter-audit_log/admin/coverage", "method": "GET",
+    "auto_fetch": true, "auth_required": true, "loading_strategy": "progressive",
+    "errorHandling": {"403": {"handler": "showErrorPage", "params": {"target": "content"}}},
+    "params": {
+      "source_type": "{{query.source_type}}", "source_identifier": "{{query.source_identifier}}",
+      "structural_status": "{{query.structural_status}}", "observed": "{{query.observed}}"
+    },
+    "fallback": {"data": {"data": []}}
+  }],
+  "slots": {"content": [{
+    "id": "coverage_page", "type": "basic", "name": "Div", "props": {"className": "admin-page-content-fluid space-y-6"},
+    "responsive": {"portable": {"props": {"className": "admin-page-content-fluid-compact space-y-4"}}},
+    "children": [
+      {"type": "composite", "name": "PageHeader", "props": {"title": "$t:glitter-audit_log.coverage.title", "description": "$t:glitter-audit_log.coverage.description"}},
+      {"id": "coverage_summary", "type": "basic", "name": "Div", "props": {"className": "grid grid-cols-1 md:grid-cols-3 gap-4"}, "children": [
+        {"type": "basic", "name": "Div", "props": {"className": "admin-card p-4"}, "children": [{"type": "basic", "name": "Span", "text": "$t:glitter-audit_log.coverage.summary.total"}, {"type": "basic", "name": "P", "text": "{{(coverage?.data?.data ?? []).length}}"}]},
+        {"type": "basic", "name": "Div", "props": {"className": "admin-card p-4"}, "children": [{"type": "basic", "name": "Span", "text": "$t:glitter-audit_log.coverage.summary.covered"}, {"type": "basic", "name": "P", "text": "{{(coverage?.data?.data ?? []).filter(item => item.structural.status === 'covered').length}}"}]},
+        {"type": "basic", "name": "Div", "props": {"className": "admin-card p-4"}, "children": [{"type": "basic", "name": "Span", "text": "$t:glitter-audit_log.coverage.summary.observed"}, {"type": "basic", "name": "P", "text": "{{(coverage?.data?.data ?? []).filter(item => item.observation.observed).length}}"}]}
+      ]},
+      {"id": "coverage_filters", "type": "basic", "name": "Div", "props": {"className": "admin-card p-5 space-y-4"}, "children": [
+        {"type": "basic", "name": "Div", "props": {"className": "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4"}, "children": [
+          {"id": "coverage_source_type", "type": "composite", "name": "Select", "props": {"label": "$t:glitter-audit_log.coverage.filters.source_type", "value": "{{_local.filters.source_type || ''}}", "options": [{"label": "$t:glitter-audit_log.coverage.filters.all", "value": ""}, {"label": "$t:glitter-audit_log.audit.source.core", "value": "core"}, {"label": "$t:glitter-audit_log.audit.source.module", "value": "module"}, {"label": "$t:glitter-audit_log.audit.source.plugin", "value": "plugin"}, {"label": "$t:glitter-audit_log.audit.source.template", "value": "template"}]}, "actions": [{"type": "change", "handler": "setState", "params": {"filters.source_type": "{{$event.target.value}}"}}]},
+          {"id": "coverage_source_identifier", "type": "composite", "name": "Input", "props": {"label": "$t:glitter-audit_log.coverage.filters.source_identifier", "value": "{{_local.filters.source_identifier || ''}}"}, "actions": [{"type": "change", "handler": "setState", "params": {"filters.source_identifier": "{{$event.target.value}}"}}]},
+          {"id": "coverage_structural_status", "type": "composite", "name": "Select", "props": {"label": "$t:glitter-audit_log.coverage.filters.status", "value": "{{_local.filters.structural_status || ''}}", "options": [{"label": "$t:glitter-audit_log.coverage.filters.all", "value": ""}, {"label": "$t:glitter-audit_log.coverage.status.covered", "value": "covered"}, {"label": "$t:glitter-audit_log.coverage.status.partial", "value": "partial"}, {"label": "$t:glitter-audit_log.coverage.status.uncovered", "value": "uncovered"}, {"label": "$t:glitter-audit_log.coverage.status.unknown", "value": "unknown"}]}, "actions": [{"type": "change", "handler": "setState", "params": {"filters.structural_status": "{{$event.target.value}}"}}]},
+          {"id": "coverage_observed", "type": "composite", "name": "Select", "props": {"label": "$t:glitter-audit_log.coverage.filters.observed", "value": "{{_local.filters.observed || ''}}", "options": [{"label": "$t:glitter-audit_log.coverage.filters.all", "value": ""}, {"label": "$t:glitter-audit_log.coverage.observation.observed", "value": "1"}, {"label": "$t:glitter-audit_log.coverage.observation.not_observed", "value": "0"}]}, "actions": [{"type": "change", "handler": "setState", "params": {"filters.observed": "{{$event.target.value}}"}}]}
+        ]},
+        {"type": "basic", "name": "Div", "props": {"className": "flex justify-end gap-2"}, "children": [
+          {"id": "coverage_reset", "type": "basic", "name": "Button", "text": "$t:glitter-audit_log.coverage.filters.reset", "actions": [{"type": "click", "handler": "navigate", "params": {"path": "/admin/modules/glitter-audit_log/coverage", "mergeQuery": true, "replace": true, "query": {"source_type": "", "source_identifier": "", "structural_status": "", "observed": ""}}}]},
+          {"id": "coverage_apply", "type": "basic", "name": "Button", "text": "$t:glitter-audit_log.coverage.filters.apply", "actions": [{"type": "click", "handler": "navigate", "params": {"path": "/admin/modules/glitter-audit_log/coverage", "mergeQuery": true, "replace": true, "query": {"source_type": "{{_local.filters.source_type || ''}}", "source_identifier": "{{_local.filters.source_identifier || ''}}", "structural_status": "{{_local.filters.structural_status || ''}}", "observed": "{{_local.filters.observed || ''}}"}}}]}
+        ]}
+      ]},
+      {"id": "coverage_loading", "type": "basic", "name": "Div", "if": "{{!coverage?.data}}", "text": "$t:glitter-audit_log.coverage.loading"},
+      {"id": "coverage_empty", "type": "basic", "name": "Div", "if": "{{!!coverage?.data && (coverage?.data?.data ?? []).length === 0}}", "props": {"className": "admin-card p-10 text-center"}, "text": "$t:glitter-audit_log.coverage.empty"},
+      {"id": "coverage_list", "type": "basic", "name": "Div", "if": "{{(coverage?.data?.data ?? []).length > 0}}", "props": {"className": "space-y-3"}, "repeat": {"items": "{{coverage?.data?.data ?? []}}", "as": "item"}, "children": [
+        {"type": "basic", "name": "Div", "props": {"className": "admin-card p-4 grid grid-cols-2 md:grid-cols-4 gap-3"}, "children": [
+          {"type": "basic", "name": "Div", "children": [{"type": "basic", "name": "Span", "text": "$t:glitter-audit_log.coverage.columns.event"}, {"type": "basic", "name": "P", "text": "{{item.event.key}}"}]},
+          {"type": "basic", "name": "Div", "children": [{"type": "basic", "name": "Span", "text": "$t:glitter-audit_log.coverage.columns.source"}, {"type": "basic", "name": "P", "text": "{{item.event.source.type}}{{item.event.source.identifier ? ' / ' + item.event.source.identifier : ''}}"}]},
+          {"type": "basic", "name": "Div", "children": [{"type": "basic", "name": "Span", "text": "$t:glitter-audit_log.coverage.columns.category"}, {"type": "basic", "name": "P", "text": "{{item.event.category}}"}]},
+          {"type": "basic", "name": "Div", "children": [{"type": "basic", "name": "Span", "text": "$t:glitter-audit_log.coverage.columns.severity"}, {"type": "basic", "name": "P", "text": "{{item.event.severity}}"}]},
+          {"type": "basic", "name": "Div", "children": [{"type": "basic", "name": "Span", "text": "$t:glitter-audit_log.coverage.columns.structural"}, {"type": "basic", "name": "P", "text": "{{item.structural.status}}"}]},
+          {"type": "basic", "name": "Div", "children": [{"type": "basic", "name": "Span", "text": "$t:glitter-audit_log.coverage.columns.observed"}, {"type": "basic", "name": "P", "if": "{{item.observation.observed}}", "text": "$t:glitter-audit_log.coverage.observation.observed"}, {"type": "basic", "name": "P", "if": "{{!item.observation.observed}}", "text": "$t:glitter-audit_log.coverage.observation.not_observed"}]},
+          {"type": "basic", "name": "Div", "children": [{"type": "basic", "name": "Span", "text": "$t:glitter-audit_log.coverage.columns.count"}, {"type": "basic", "name": "P", "text": "{{item.observation.count}}"}]},
+          {"type": "basic", "name": "Div", "children": [{"type": "basic", "name": "Span", "text": "$t:glitter-audit_log.coverage.columns.last_seen"}, {"type": "basic", "name": "P", "text": "{{item.observation.last_seen_at || '-'}}"}]},
+          {"type": "basic", "name": "Button", "text": "$t:glitter-audit_log.coverage.details.show", "actions": [{"type": "click", "handler": "setState", "params": {"selectedEventKey": "{{_local.selectedEventKey === item.event.key ? null : item.event.key}}"}}]},
+          {"type": "basic", "name": "Div", "if": "{{_local.selectedEventKey === item.event.key}}", "props": {"className": "col-span-full bg-gray-50 dark:bg-gray-800 p-3"}, "children": [
+            {"type": "basic", "name": "P", "text": "$t:glitter-audit_log.coverage.details.description_key"}, {"type": "basic", "name": "Code", "text": "{{item.event.description.key}}"},
+            {"type": "basic", "name": "P", "text": "$t:glitter-audit_log.coverage.details.expected_action"}, {"type": "basic", "name": "Code", "text": "{{item.event.expected_action}}"},
+            {"type": "basic", "name": "P", "text": "$t:glitter-audit_log.coverage.details.checks"}, {"type": "basic", "name": "Ul", "repeat": {"items": "{{item.structural.checks}}", "as": "check"}, "children": [{"type": "basic", "name": "Li", "text": "{{check.key}} / {{check.status}}{{check.evidence ? ' / ' + check.evidence : ''}}"}]},
+            {"type": "basic", "name": "P", "text": "$t:glitter-audit_log.coverage.details.diagnostics"}, {"type": "basic", "name": "Ul", "repeat": {"items": "{{item.diagnostics}}", "as": "diagnostic"}, "children": [{"type": "basic", "name": "Li", "text": "{{diagnostic}}"}]}
+          ]}
+        ]}
+      ]}
+    ]
+  }]}
+}

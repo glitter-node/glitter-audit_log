@@ -1,0 +1,25 @@
+{
+  "version": "1.0.0",
+  "routes": [
+    {
+      "path": "*/admin/modules/glitter-audit_log/audits",
+      "layout": "admin_audit_explorer",
+      "auth_required": true,
+      "meta": {
+        "title": "$t:glitter-audit_log.audit.title",
+        "description": "$t:glitter-audit_log.audit.description",
+        "permission": "glitter-audit_log.audits.read"
+      }
+    },
+    {
+      "path": "*/admin/modules/glitter-audit_log/coverage",
+      "layout": "admin_audit_coverage",
+      "auth_required": true,
+      "meta": {
+        "title": "$t:glitter-audit_log.coverage.title",
+        "description": "$t:glitter-audit_log.coverage.description",
+        "permission": "glitter-audit_log.audits.read"
+      }
+    }
+  ]
+}
