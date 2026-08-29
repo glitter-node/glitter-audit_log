@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.4.1] - 2026-08-29
+
+- Fixed module bootstrap compatibility during GnuBoard7 core update and extension lifecycle.
+- Removed the direct `ProvidesAuditEventsInterface` dependency from `module.php`.
+- Preserved `getAuditEvents()` discovery without requiring module autoload during bootstrap.
+
 ## [0.4.0] - 2026-08-29
 
 ### Added

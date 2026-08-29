@@ -5,7 +5,7 @@
         "ko": "감사 로그",
         "en": "Audit Log"
     },
-    "version": "0.4.0",
+    "version": "0.4.1",
     "license": "MIT",
     "description": {
         "ko": "G7 감사 이벤트 탐색·Registry·Coverage 진단",

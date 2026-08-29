@@ -3,9 +3,8 @@
 namespace Modules\Glitter\AuditLog;
 
 use App\Extension\AbstractModule;
-use Modules\Glitter\AuditLog\Contracts\ProvidesAuditEventsInterface;
 
-class Module extends AbstractModule implements ProvidesAuditEventsInterface
+class Module extends AbstractModule
 {
     /**
      * 이 모듈이 선언하는 감사 이벤트 메타데이터입니다.
