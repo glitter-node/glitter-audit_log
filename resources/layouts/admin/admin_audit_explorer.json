@@ -1,0 +1,468 @@
+{
+  "version": "1.0.0",
+  "layout_name": "admin_audit_explorer",
+  "permissions": [
+    "glitter-audit_log.audits.read",
+    "core.activities.read"
+  ],
+  "extends": "_admin_base",
+  "meta": {
+    "title": "$t:glitter-audit_log.audit.title",
+    "description": "$t:glitter-audit_log.audit.description"
+  },
+  "state": {
+    "selectedAuditId": null,
+    "filters": {}
+  },
+  "init_actions": [
+    {
+      "handler": "setState",
+      "params": {
+        "target": "local",
+        "filters": {
+          "log_type": "{{query.log_type || ''}}",
+          "action": "{{query.action || ''}}",
+          "actor": "{{query.actor || ''}}",
+          "resource_type": "{{query.resource_type || ''}}",
+          "resource_id": "{{query.resource_id || ''}}",
+          "source_type": "{{query.source_type || ''}}",
+          "source_identifier": "{{query.source_identifier || ''}}",
+          "date_from": "{{query.date_from || ''}}",
+          "date_to": "{{query.date_to || ''}}",
+          "search": "{{query.search || ''}}"
+        }
+      }
+    }
+  ],
+  "transition_overlay": {
+    "wait_for": ["audits"]
+  },
+  "data_sources": [
+    {
+      "id": "audits",
+      "label_key": "$t:glitter-audit_log.audit.title",
+      "type": "api",
+      "endpoint": "/api/modules/glitter-audit_log/admin/audits",
+      "method": "GET",
+      "auto_fetch": true,
+      "auth_required": true,
+      "loading_strategy": "progressive",
+      "errorHandling": {
+        "403": {
+          "handler": "showErrorPage",
+          "params": {"target": "content"}
+        }
+      },
+      "params": {
+        "page": "{{query.page || 1}}",
+        "per_page": "{{query.per_page || 20}}",
+        "log_type": "{{query.log_type}}",
+        "action": "{{query.action}}",
+        "actor": "{{query.actor}}",
+        "resource_type": "{{query.resource_type}}",
+        "resource_id": "{{query.resource_id}}",
+        "source_type": "{{query.source_type}}",
+        "source_identifier": "{{query.source_identifier}}",
+        "date_from": "{{query.date_from}}",
+        "date_to": "{{query.date_to}}",
+        "search": "{{query.search}}"
+      },
+      "fallback": {
+        "data": {
+          "data": [],
+          "pagination": {
+            "current_page": 1,
+            "last_page": 1,
+            "per_page": 20,
+            "total": 0
+          }
+        }
+      }
+    }
+  ],
+  "slots": {
+    "content": [
+      {
+        "id": "audit_explorer",
+        "type": "basic",
+        "name": "Div",
+        "props": {"className": "admin-page-content-fluid space-y-6"},
+        "responsive": {
+          "portable": {"props": {"className": "admin-page-content-fluid-compact space-y-4"}}
+        },
+        "children": [
+          {
+            "id": "audit_header",
+            "type": "composite",
+            "name": "PageHeader",
+            "props": {
+              "title": "$t:glitter-audit_log.audit.title",
+              "description": "$t:glitter-audit_log.audit.description"
+            }
+          },
+          {
+            "id": "audit_filters",
+            "type": "basic",
+            "name": "Div",
+            "props": {"className": "admin-card p-5 space-y-4"},
+            "children": [
+              {
+                "type": "basic",
+                "name": "H2",
+                "props": {"className": "section-heading"},
+                "text": "$t:glitter-audit_log.audit.filters.title"
+              },
+              {
+                "type": "basic",
+                "name": "Div",
+                "props": {"className": "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-4"},
+                "children": [
+                  {
+                    "id": "filter_log_type",
+                    "type": "composite",
+                    "name": "Select",
+                    "props": {
+                      "label": "$t:glitter-audit_log.audit.filters.log_type",
+                      "value": "{{_local.filters.log_type || ''}}",
+                      "options": [
+                        {"label": "$t:glitter-audit_log.audit.filters.all", "value": ""},
+                        {"label": "$t:glitter-audit_log.audit.log_type.admin", "value": "admin"},
+                        {"label": "$t:glitter-audit_log.audit.log_type.user", "value": "user"},
+                        {"label": "$t:glitter-audit_log.audit.log_type.system", "value": "system"}
+                      ]
+                    },
+                    "actions": [{"type": "change", "handler": "setState", "params": {"filters.log_type": "{{$event.target.value}}"}}]
+                  },
+                  {
+                    "id": "filter_action",
+                    "type": "composite",
+                    "name": "Input",
+                    "props": {"label": "$t:glitter-audit_log.audit.filters.action", "value": "{{_local.filters.action || ''}}"},
+                    "actions": [{"type": "change", "handler": "setState", "params": {"filters.action": "{{$event.target.value}}"}}]
+                  },
+                  {
+                    "id": "filter_actor",
+                    "type": "composite",
+                    "name": "Input",
+                    "props": {"label": "$t:glitter-audit_log.audit.filters.actor", "value": "{{_local.filters.actor || ''}}"},
+                    "actions": [{"type": "change", "handler": "setState", "params": {"filters.actor": "{{$event.target.value}}"}}]
+                  },
+                  {
+                    "id": "filter_resource_type",
+                    "type": "composite",
+                    "name": "Input",
+                    "props": {"label": "$t:glitter-audit_log.audit.filters.resource_type", "value": "{{_local.filters.resource_type || ''}}"},
+                    "actions": [{"type": "change", "handler": "setState", "params": {"filters.resource_type": "{{$event.target.value}}"}}]
+                  },
+                  {
+                    "id": "filter_resource_id",
+                    "type": "composite",
+                    "name": "Input",
+                    "props": {"label": "$t:glitter-audit_log.audit.filters.resource_id", "value": "{{_local.filters.resource_id || ''}}"},
+                    "actions": [{"type": "change", "handler": "setState", "params": {"filters.resource_id": "{{$event.target.value}}"}}]
+                  },
+                  {
+                    "id": "filter_source_type",
+                    "type": "composite",
+                    "name": "Select",
+                    "props": {
+                      "label": "$t:glitter-audit_log.audit.filters.source_type",
+                      "value": "{{_local.filters.source_type || ''}}",
+                      "options": [
+                        {"label": "$t:glitter-audit_log.audit.filters.all", "value": ""},
+                        {"label": "$t:glitter-audit_log.audit.source.core", "value": "core"},
+                        {"label": "$t:glitter-audit_log.audit.source.module", "value": "module"},
+                        {"label": "$t:glitter-audit_log.audit.source.plugin", "value": "plugin"},
+                        {"label": "$t:glitter-audit_log.audit.source.template", "value": "template"},
+                        {"label": "$t:glitter-audit_log.audit.source.unknown", "value": "unknown"}
+                      ]
+                    },
+                    "actions": [{"type": "change", "handler": "setState", "params": {"filters.source_type": "{{$event.target.value}}"}}]
+                  },
+                  {
+                    "id": "filter_source_identifier",
+                    "type": "composite",
+                    "name": "Input",
+                    "props": {"label": "$t:glitter-audit_log.audit.filters.source_identifier", "value": "{{_local.filters.source_identifier || ''}}"},
+                    "actions": [{"type": "change", "handler": "setState", "params": {"filters.source_identifier": "{{$event.target.value}}"}}]
+                  },
+                  {
+                    "id": "filter_date_from",
+                    "type": "composite",
+                    "name": "Input",
+                    "props": {"type": "date", "label": "$t:glitter-audit_log.audit.filters.date_from", "value": "{{_local.filters.date_from || ''}}"},
+                    "actions": [{"type": "change", "handler": "setState", "params": {"filters.date_from": "{{$event.target.value}}"}}]
+                  },
+                  {
+                    "id": "filter_date_to",
+                    "type": "composite",
+                    "name": "Input",
+                    "props": {"type": "date", "label": "$t:glitter-audit_log.audit.filters.date_to", "value": "{{_local.filters.date_to || ''}}"},
+                    "actions": [{"type": "change", "handler": "setState", "params": {"filters.date_to": "{{$event.target.value}}"}}]
+                  },
+                  {
+                    "id": "filter_search",
+                    "type": "composite",
+                    "name": "Input",
+                    "props": {"label": "$t:glitter-audit_log.audit.filters.search", "placeholder": "$t:glitter-audit_log.audit.filters.placeholder", "value": "{{_local.filters.search || ''}}"},
+                    "actions": [{"type": "change", "handler": "setState", "params": {"filters.search": "{{$event.target.value}}"}}]
+                  }
+                ]
+              },
+              {
+                "type": "basic",
+                "name": "Div",
+                "props": {"className": "flex flex-wrap justify-end gap-2"},
+                "children": [
+                  {
+                    "id": "reset_filters",
+                    "type": "basic",
+                    "name": "Button",
+                    "props": {"className": "btn btn-secondary"},
+                    "text": "$t:glitter-audit_log.audit.actions.reset",
+                    "actions": [{
+                      "type": "click",
+                      "handler": "navigate",
+                      "params": {
+                        "path": "/admin/modules/glitter-audit_log/audits",
+                        "mergeQuery": true,
+                        "replace": true,
+                        "query": {"page": "", "log_type": "", "action": "", "actor": "", "resource_type": "", "resource_id": "", "source_type": "", "source_identifier": "", "date_from": "", "date_to": "", "search": ""}
+                      }
+                    }]
+                  },
+                  {
+                    "id": "apply_filters",
+                    "type": "basic",
+                    "name": "Button",
+                    "props": {"className": "btn btn-primary"},
+                    "text": "$t:glitter-audit_log.audit.actions.apply",
+                    "actions": [{
+                      "type": "click",
+                      "handler": "navigate",
+                      "params": {
+                        "path": "/admin/modules/glitter-audit_log/audits",
+                        "mergeQuery": true,
+                        "replace": true,
+                        "query": {
+                          "page": "",
+                          "log_type": "{{_local.filters.log_type || ''}}",
+                          "action": "{{_local.filters.action || ''}}",
+                          "actor": "{{_local.filters.actor || ''}}",
+                          "resource_type": "{{_local.filters.resource_type || ''}}",
+                          "resource_id": "{{_local.filters.resource_id || ''}}",
+                          "source_type": "{{_local.filters.source_type || ''}}",
+                          "source_identifier": "{{_local.filters.source_identifier || ''}}",
+                          "date_from": "{{_local.filters.date_from || ''}}",
+                          "date_to": "{{_local.filters.date_to || ''}}",
+                          "search": "{{_local.filters.search || ''}}"
+                        }
+                      }
+                    }]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "audit_loading",
+            "type": "basic",
+            "name": "Div",
+            "if": "{{!audits?.data}}",
+            "props": {"className": "admin-card p-8 text-center text-gray-500 dark:text-gray-400"},
+            "text": "$t:glitter-audit_log.audit.loading"
+          },
+          {
+            "id": "audit_empty",
+            "type": "basic",
+            "name": "Div",
+            "if": "{{!!audits?.data && (audits?.data?.data ?? []).length === 0}}",
+            "props": {"className": "admin-card p-10 text-center text-gray-500 dark:text-gray-400"},
+            "text": "$t:glitter-audit_log.audit.empty"
+          },
+          {
+            "id": "audit_list",
+            "type": "basic",
+            "name": "Div",
+            "if": "{{(audits?.data?.data ?? []).length > 0}}",
+            "props": {"className": "admin-card overflow-hidden"},
+            "children": [
+              {
+                "type": "basic",
+                "name": "Div",
+                "props": {"className": "overflow-x-auto"},
+                "children": [{
+                  "type": "basic",
+                  "name": "Table",
+                  "props": {"className": "w-full min-w-[1100px]"},
+                  "children": [
+                    {
+                      "type": "basic",
+                      "name": "Thead",
+                      "children": [{
+                        "type": "basic",
+                        "name": "Tr",
+                        "props": {"className": "border-b border-gray-200 dark:border-gray-700"},
+                        "children": [
+                          {"type": "basic", "name": "Th", "props": {"className": "text-table-header px-3 py-3 text-left"}, "text": "$t:glitter-audit_log.audit.columns.datetime"},
+                          {"type": "basic", "name": "Th", "props": {"className": "text-table-header px-3 py-3 text-left"}, "text": "$t:glitter-audit_log.audit.columns.actor"},
+                          {"type": "basic", "name": "Th", "props": {"className": "text-table-header px-3 py-3 text-left"}, "text": "$t:glitter-audit_log.audit.columns.action"},
+                          {"type": "basic", "name": "Th", "props": {"className": "text-table-header px-3 py-3 text-left"}, "text": "$t:glitter-audit_log.audit.columns.resource"},
+                          {"type": "basic", "name": "Th", "props": {"className": "text-table-header px-3 py-3 text-left"}, "text": "$t:glitter-audit_log.audit.columns.source"},
+                          {"type": "basic", "name": "Th", "props": {"className": "text-table-header px-3 py-3 text-left"}, "text": "$t:glitter-audit_log.audit.columns.ip"},
+                          {"type": "basic", "name": "Th", "props": {"className": "text-table-header px-3 py-3 text-left"}, "text": "$t:glitter-audit_log.audit.columns.description"},
+                          {"type": "basic", "name": "Th", "props": {"className": "text-table-header px-3 py-3 text-left"}, "text": "$t:glitter-audit_log.audit.columns.details"}
+                        ]
+                      }]
+                    },
+                    {
+                      "type": "basic",
+                      "name": "Tbody",
+                      "children": [{
+                        "id": "audit_row_group_{{auditIndex}}",
+                        "type": "basic",
+                        "name": "Tbody",
+                        "iteration": {"source": "{{audits?.data?.data ?? []}}", "item_var": "audit", "index_var": "auditIndex"},
+                        "children": [
+                          {
+                            "type": "basic",
+                            "name": "Tr",
+                            "props": {"className": "border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800/50"},
+                            "children": [
+                              {"type": "basic", "name": "Td", "props": {"className": "px-3 py-3 whitespace-nowrap text-sm"}, "text": "{{audit.created_at ?? ''}}"},
+                              {"type": "basic", "name": "Td", "props": {"className": "px-3 py-3 text-sm"}, "text": "{{audit.actor?.name ?? ''}}"},
+                              {"type": "basic", "name": "Td", "props": {"className": "px-3 py-3 text-sm"}, "text": "{{audit.action?.label ?? audit.action?.value ?? ''}}"},
+                              {"type": "basic", "name": "Td", "props": {"className": "px-3 py-3 text-sm"}, "text": "{{audit.resource?.type_display ?? audit.resource?.type ?? ''}} / {{audit.resource?.id ?? ''}}"},
+                              {
+                                "type": "basic",
+                                "name": "Td",
+                                "props": {"className": "px-3 py-3 text-sm"},
+                                "children": [
+                                  {"type": "basic", "name": "Span", "if": "{{audit.source?.type === 'core'}}", "text": "$t:glitter-audit_log.audit.source.core"},
+                                  {"type": "basic", "name": "Span", "if": "{{audit.source?.type === 'module'}}", "text": "$t:glitter-audit_log.audit.source.module"},
+                                  {"type": "basic", "name": "Span", "if": "{{audit.source?.type === 'plugin'}}", "text": "$t:glitter-audit_log.audit.source.plugin"},
+                                  {"type": "basic", "name": "Span", "if": "{{audit.source?.type === 'template'}}", "text": "$t:glitter-audit_log.audit.source.template"},
+                                  {"type": "basic", "name": "Span", "if": "{{!['core','module','plugin','template'].includes(audit.source?.type)}}", "text": "$t:glitter-audit_log.audit.source.unknown"},
+                                  {"type": "basic", "name": "Span", "if": "{{!!audit.source?.identifier && audit.source?.identifier !== 'core'}}", "text": " / {{audit.source.identifier}}"}
+                                ]
+                              },
+                              {"type": "basic", "name": "Td", "props": {"className": "px-3 py-3 whitespace-nowrap text-sm"}, "text": "{{audit.ip ?? ''}}"},
+                              {"type": "basic", "name": "Td", "props": {"className": "px-3 py-3 text-sm max-w-md"}, "text": "{{audit.description?.text ?? ''}}"},
+                              {
+                                "type": "basic",
+                                "name": "Td",
+                                "props": {"className": "px-3 py-3"},
+                                "children": [
+                                  {
+                                    "type": "basic",
+                                    "name": "Button",
+                                    "if": "{{_local.selectedAuditId !== audit.id}}",
+                                    "props": {"className": "btn btn-secondary btn-sm"},
+                                    "text": "$t:glitter-audit_log.audit.actions.show_details",
+                                    "actions": [{"type": "click", "handler": "setState", "params": {"selectedAuditId": "{{audit.id}}"}}]
+                                  },
+                                  {
+                                    "type": "basic",
+                                    "name": "Button",
+                                    "if": "{{_local.selectedAuditId === audit.id}}",
+                                    "props": {"className": "btn btn-secondary btn-sm"},
+                                    "text": "$t:glitter-audit_log.audit.actions.hide_details",
+                                    "actions": [{"type": "click", "handler": "setState", "params": {"selectedAuditId": null}}]
+                                  }
+                                ]
+                              }
+                            ]
+                          },
+                          {
+                            "type": "basic",
+                            "name": "Tr",
+                            "if": "{{_local.selectedAuditId === audit.id}}",
+                            "children": [{
+                              "type": "basic",
+                              "name": "Td",
+                              "props": {"colSpan": 8, "className": "p-4 bg-gray-50 dark:bg-gray-800"},
+                              "children": [{
+                                "type": "basic",
+                                "name": "Div",
+                                "props": {"className": "grid grid-cols-1 xl:grid-cols-3 gap-4"},
+                                "children": [
+                                  {
+                                    "type": "basic", "name": "Div", "props": {"className": "space-y-2"},
+                                    "children": [
+                                      {"type": "basic", "name": "H3", "props": {"className": "font-semibold text-gray-900 dark:text-white"}, "text": "$t:glitter-audit_log.audit.details.changes"},
+                                      {
+                                        "type": "basic", "name": "Div", "iteration": {"source": "{{Object.entries(audit.changes ?? {}).map(([field,value]) => ({ field, old: value?.old, new: value?.new }))}}", "item_var": "change", "index_var": "changeIndex"},
+                                        "props": {"className": "rounded border border-gray-200 dark:border-gray-700 p-2 text-sm"},
+                                        "children": [
+                                          {"type": "basic", "name": "Div", "props": {"className": "font-medium"}, "text": "{{change.field}}"},
+                                          {"type": "basic", "name": "Div", "text": "$t:glitter-audit_log.audit.details.before|value={{typeof change.old === 'object' && change.old !== null ? JSON.stringify(change.old) : (change.old ?? '')}}"},
+                                          {"type": "basic", "name": "Div", "text": "$t:glitter-audit_log.audit.details.after|value={{typeof change.new === 'object' && change.new !== null ? JSON.stringify(change.new) : (change.new ?? '')}}"}
+                                        ]
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "type": "basic", "name": "Div", "props": {"className": "space-y-2"},
+                                    "children": [
+                                      {"type": "basic", "name": "H3", "props": {"className": "font-semibold text-gray-900 dark:text-white"}, "text": "$t:glitter-audit_log.audit.details.bulk_changes"},
+                                      {
+                                        "type": "basic", "name": "Div", "iteration": {"source": "{{Object.entries(audit.bulk_changes ?? {}).map(([key,value]) => ({ key, value }))}}", "item_var": "entry", "index_var": "entryIndex"},
+                                        "props": {"className": "rounded border border-gray-200 dark:border-gray-700 p-2 text-sm break-all"},
+                                        "text": "{{entry.key}}: {{typeof entry.value === 'object' && entry.value !== null ? JSON.stringify(entry.value) : (entry.value ?? '')}}"
+                                      }
+                                    ]
+                                  },
+                                  {
+                                    "type": "basic", "name": "Div", "props": {"className": "space-y-2"},
+                                    "children": [
+                                      {"type": "basic", "name": "H3", "props": {"className": "font-semibold text-gray-900 dark:text-white"}, "text": "$t:glitter-audit_log.audit.details.properties"},
+                                      {
+                                        "type": "basic", "name": "Div", "iteration": {"source": "{{Object.entries(audit.properties ?? {}).map(([key,value]) => ({ key, value }))}}", "item_var": "property", "index_var": "propertyIndex"},
+                                        "props": {"className": "rounded border border-gray-200 dark:border-gray-700 p-2 text-sm break-all"},
+                                        "text": "{{property.key}}: {{typeof property.value === 'object' && property.value !== null ? JSON.stringify(property.value) : (property.value ?? '')}}"
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }]
+                            }]
+                          }
+                        ]
+                      }]
+                    }
+                  ]
+                }]
+              },
+              {
+                "id": "audit_pagination",
+                "type": "basic",
+                "name": "Div",
+                "props": {"className": "flex justify-center p-4 border-t border-gray-200 dark:border-gray-700"},
+                "children": [{
+                  "type": "composite",
+                  "name": "Pagination",
+                  "props": {
+                    "currentPage": "{{audits?.data?.pagination?.current_page ?? 1}}",
+                    "totalPages": "{{audits?.data?.pagination?.last_page ?? 1}}",
+                    "hasMorePages": "{{audits?.data?.pagination?.has_more_pages ?? false}}",
+                    "showFirstLast": true
+                  },
+                  "actions": [{
+                    "event": "onPageChange",
+                    "handler": "navigate",
+                    "params": {
+                      "path": "/admin/modules/glitter-audit_log/audits",
+                      "mergeQuery": true,
+                      "replace": true,
+                      "query": {"page": "{{$args[0]}}"}
+                    }
+                  }]
+                }]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

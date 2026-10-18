@@ -1,0 +1,80 @@
+{
+  "coverage": {
+    "title": "Audit Event Coverage",
+    "description": "Diagnose structural linkage and observation in the ledger as independent signals.",
+    "summary": {"total": "Total", "covered": "Structurally covered", "observed": "Observed"},
+    "filters": {"source_type": "Source type", "source_identifier": "Source identifier", "status": "Structural status", "observed": "Observation", "all": "All", "apply": "Apply", "reset": "Reset"},
+    "status": {"covered": "Structural linkage confirmed", "partial": "Partially linked", "uncovered": "Linkage absence confirmed", "unknown": "Unknown"},
+    "observation": {"observed": "Actual logs observed", "not_observed": "Not observed in the current ledger"},
+    "columns": {"event": "Event", "source": "Source", "category": "Category", "severity": "Severity", "structural": "Structural status", "observed": "Observed", "count": "Count", "last_seen": "Last seen", "details": "Details"},
+    "details": {"checks": "Structural checks", "diagnostics": "Diagnostic codes", "description_key": "Description key", "expected_action": "Expected action", "show": "Show details", "hide": "Hide details"},
+    "empty": "No audit events are declared. This is expected before producer adoption.",
+    "loading": "Analyzing coverage.",
+    "errors": {"load": "Unable to load audit coverage."},
+    "checks": {"source_activity_listener": "Activity Log listener", "expected_action_mapping": "Expected action mapping", "description_translation": "Description translation", "passed": "Confirmed", "failed": "Not confirmed", "unknown": "Unknown"},
+    "diagnostics": {"source_listener_missing": "No Activity Log listener was found for the source.", "expected_action_not_mapped": "The expected action is not represented by a subscribed hook.", "translation_missing": "The description translation is missing.", "source_unresolvable": "The event source cannot be resolved.", "no_observation": "No matching log is currently observed in the ledger.", "structural_unknown": "Runtime metadata is insufficient to determine structural linkage."}
+  },
+  "audit": {
+    "title": "Audit Log Explorer",
+    "description": "Search permitted activity records from an audit perspective and inspect their changes.",
+    "filters": {
+      "title": "Filters",
+      "log_type": "Log type",
+      "action": "Action",
+      "actor": "Actor",
+      "resource_type": "Resource type",
+      "resource_id": "Resource ID",
+      "source_type": "Source type",
+      "source_identifier": "Source identifier",
+      "date_from": "From",
+      "date_to": "To",
+      "search": "Search",
+      "all": "All",
+      "placeholder": "Enter a search term"
+    },
+    "log_type": {
+      "admin": "Administrator",
+      "user": "User",
+      "system": "System"
+    },
+    "columns": {
+      "datetime": "Date/time",
+      "actor": "Actor",
+      "action": "Action",
+      "resource": "Resource",
+      "source": "Source",
+      "ip": "IP",
+      "description": "Description",
+      "details": "Details"
+    },
+    "source": {
+      "core": "Core",
+      "module": "Module",
+      "plugin": "Plugin",
+      "template": "Template",
+      "unknown": "Unknown"
+    },
+    "empty": "No audit logs match the current filters.",
+    "loading": "Loading audit logs.",
+    "errors": {
+      "load": "Unable to load audit logs."
+    },
+    "details": {
+      "changes": "Changes",
+      "bulk_changes": "Bulk changes",
+      "properties": "Properties",
+      "field": "Field",
+      "before": "Before: {{value}}",
+      "after": "After: {{value}}",
+      "key": "Key",
+      "value": "Value",
+      "none": "No details are available."
+    },
+    "actions": {
+      "apply": "Apply filters",
+      "reset": "Reset filters",
+      "show_details": "Show details",
+      "hide_details": "Hide details"
+    }
+  }
+}
